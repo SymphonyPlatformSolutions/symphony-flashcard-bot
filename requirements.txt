@@ -6,3 +6,10 @@ yattag==1.12.2
 python-json-logger==0.1.11
 beautifulsoup4==4.8.0
 Jinja2==2.10.1
+pandas==0.25.1
+////////////////////
+import pandas as pd
+pd.read_csv('FL_insurance_sample.csv') 
+*eventually CSV file will be replaced with the actual file
+*ensure that the CSV file is in the correct working directory 
+////////////////////
