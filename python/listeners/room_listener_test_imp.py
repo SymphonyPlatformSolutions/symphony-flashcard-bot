@@ -17,6 +17,7 @@ class RoomListenerTestImp(RoomListener):
         self.bot_client = sym_bot_client
 
     def on_room_msg(self, msg):
+        logging.debug('hello world', msg)
         logging.debug('room msg received', msg)
         msg_processor = MessageProcessor(self.bot_client)
         msg_processor.process(msg)
