@@ -10,7 +10,7 @@
     "authType": "rsa",
     "botPrivateKeyPath": "rsa/",
     "botPrivateKeyName": "rsa-private-x.pem",
-    "botUsername": "bot-username",
+    "botUsername": "ys-bot",
     "botEmailAddress": "bot-email@email.com",
     "truststorePath": ""
 }

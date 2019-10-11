@@ -1,18 +1,9 @@
 import logging
-from .room_listener import RoomListener
-from .simple_message_processor import MessageProcessor
-# A sample implementation of Abstract RoomListener class
-# The listener can respond to incoming events if the respective event
-# handler has been implemented
+from sym_api_client_python.listeners.room_listener import RoomListener
+from .message_processor import MessageProcessor
 
 
-class RoomListenerTestImp(RoomListener):
-    """Example implementation of RoomListener
-
-        sym_bot_client: contains clients which respond to incoming events
-
-    """
-
+class RoomListenerImpl(RoomListener):
     def __init__(self, sym_bot_client):
         self.bot_client = sym_bot_client
 
@@ -28,8 +19,7 @@ class RoomListenerTestImp(RoomListener):
     def on_room_deactivated(self, room_deactivated):
         logging.debug('room Deactivated', room_deactivated)
 
-    def on_room_member_demoted_from_owner(self,
-                                          room_member_demoted_from_owner):
+    def on_room_member_demoted_from_owner(self, room_member_demoted_from_owner):
         logging.debug('room member demoted from owner',
                       room_member_demoted_from_owner)
 
