@@ -10,7 +10,7 @@ class IMListenerImpl(IMListener):
 
     def on_im_message(self, im_message):
         logging.debug('message received in IM')
-        self.msg_processor.process(im_message)
+        self.msg_processor.processIM(im_message)
 
     def on_im_created(self, im_created):
         logging.debug('IM created!', im_created)
