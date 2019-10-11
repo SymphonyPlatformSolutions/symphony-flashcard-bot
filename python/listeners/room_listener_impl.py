@@ -11,7 +11,7 @@ class RoomListenerImpl(RoomListener):
         logging.debug('hello world', msg)
         logging.debug('room msg received', msg)
         msg_processor = MessageProcessor(self.bot_client)
-        msg_processor.process(msg)
+        msg_processor.processROOM(msg)
 
     def on_room_created(self, room_created):
         logging.debug('room created', room_created)

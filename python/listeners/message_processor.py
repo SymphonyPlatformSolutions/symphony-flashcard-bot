@@ -45,6 +45,17 @@ class MessageProcessor:
         else:
             self.send_message(stream_id,'Sorry, I do not understand')
 
+    def processROOM(self, msg):
+        stream_id = self.message_parser.get_stream_id(msg)
+        msg_text = self.message_parser.get_text(msg)
+        command = msg_text[0]
+
+        if (command == '/fundname') or (command == '/ISIN'):
+            self.send_message(stream_id, self.help_message)
+
+        else: 
+            self.send_message(stream_id, 'We only support the functions /FUNDNAME or /ISIN')
+
     def send_message(self,stream_id,msg_text):
         self.message_client.send_msg(stream_id,dict(message=f'<messageML>{msg_text}</messageML>'))
 
