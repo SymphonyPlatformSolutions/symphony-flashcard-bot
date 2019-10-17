@@ -6,9 +6,6 @@ from sym_api_client_python.auth.rsa_auth import SymBotRSAAuth
 from sym_api_client_python.clients.sym_bot_client import SymBotClient
 from listeners.im_listener_impl import IMListenerImpl
 from listeners.room_listener_impl import RoomListenerImpl
-import pandas as pd
-
-
 
 
 def configure_logging():
@@ -28,8 +25,6 @@ def main():
 
     # Configure log
     configure_logging()
-
-    fundslist = pd.read_csv('/Users/user/test_bot_amos/python/data.csv')
 
     # RSA Auth flow: pass path to rsa config.json file
     configure = SymConfig('resources/config.json')
