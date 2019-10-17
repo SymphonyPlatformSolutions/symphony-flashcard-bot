@@ -16,6 +16,7 @@ class MessageProcessor:
         stream_id = self.message_parser.get_stream_id(msg)
         msg_text = self.message_parser.get_text(msg)
         command = msg_text[0].lower()
+        #command_ISIN = msg_text[1].lower()
         return stream_id, msg_text, command
 
     def get_attachment(self, stream_id, message_id, file_id):

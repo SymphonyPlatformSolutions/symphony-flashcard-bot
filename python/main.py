@@ -6,7 +6,7 @@ from sym_api_client_python.auth.rsa_auth import SymBotRSAAuth
 from sym_api_client_python.clients.sym_bot_client import SymBotClient
 from listeners.im_listener_impl import IMListenerImpl
 from listeners.room_listener_impl import RoomListenerImpl
-
+import pandas as pd
 
 def configure_logging():
     mydir = Path('logs')
@@ -31,6 +31,8 @@ def main():
     configure.load_config()
     auth = SymBotRSAAuth(configure)
     auth.authenticate()
+    
+    fundslist = pd.read_csv('/Users/user/test_bot_amos/python/data.csv')
 
     # Initialize SymBotClient with auth and configure objects
     bot_client = SymBotClient(auth, configure)
