@@ -1,10 +1,11 @@
 import logging
+from sym_api_client_python.clients.sym_bot_client import SymBotClient
 from sym_api_client_python.listeners.room_listener import RoomListener
-from .message_processor import MessageProcessor
+from processors.message_processor import MessageProcessor
 
 
 class RoomListenerImpl(RoomListener):
-    def __init__(self, sym_bot_client):
+    def __init__(self, sym_bot_client: SymBotClient):
         self.bot_client = sym_bot_client
 
     def on_room_msg(self, msg):
