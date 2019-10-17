@@ -9,8 +9,10 @@
     "agentPort": 443,
     "authType": "rsa",
     "botPrivateKeyPath": "rsa/",
-    "botPrivateKeyName": "rsa-private-test_bot_amos.pem",
-    "botUsername": "amos-bot",
+    "botPrivateKeyName": "rsa-private-x.pem",
+    "botUsername": "ys-bot",
     "botEmailAddress": "bot-email@email.com",
-    "truststorePath": ""
+    "truststorePath": "",
+    "dataFilePath": "python/data.csv",
+    "adminRoomName": "MI Bot Room YS"
 }

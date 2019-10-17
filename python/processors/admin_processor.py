@@ -19,4 +19,4 @@ class AdminProcessor:
                 continue
             user_id = user['id']
             stream_id = self.bot_client.get_stream_client().create_im([ user_id ])['id']
-            self.send_message(stream_id, message)
+            self.send_message(stream_id, f'[Broadcast Message] {message}')
