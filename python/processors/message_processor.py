@@ -1,4 +1,5 @@
 import base64
+import settings
 from sym_api_client_python.clients.sym_bot_client import SymBotClient
 from sym_api_client_python.processors.sym_message_parser import SymMessageParser
 from .admin_processor import AdminProcessor
@@ -15,7 +16,7 @@ class MessageProcessor:
     def parse_message(self, msg):
         stream_id = self.message_parser.get_stream_id(msg)
         msg_text = self.message_parser.get_text(msg)
-        command = msg_text[0].lower()
+        command = msg_text[0].lower() if len(msg_text) > 0 else ''
         #command_ISIN = msg_text[1].lower()
         return stream_id, msg_text, command
 
@@ -28,6 +29,10 @@ class MessageProcessor:
 
     def processROOM(self, msg):
         stream_id, msg_text, command = self.parse_message(msg)
+
+        if stream_id != settings.admin_stream_id:
+            print(f'Ignoring room message from non-admin stream {stream_id}')
+            return
 
         if command == '/help':
             print('doing help')
@@ -51,8 +56,8 @@ class MessageProcessor:
             attachment = self.get_attachment(stream_id, msg['messageId'], msg['attachments'][0]['id'])
             self.admin_processor.blast_messages(attachment, str.join(' ', msg_text[1:]))
 
-        else:
-            self.send_message(stream_id, 'Sorry, I do not understand')
+        elif command.startswith('/'):
+            self.send_message(stream_id, f'Sorry, I do not understand the command {command}')
 
     def processIM(self, msg):
         stream_id, msg_text, command = self.parse_message(msg)

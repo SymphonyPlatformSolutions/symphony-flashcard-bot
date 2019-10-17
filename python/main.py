@@ -1,6 +1,7 @@
 from pathlib import Path
 
 import logging
+import settings
 from sym_api_client_python.configure.configure import SymConfig
 from sym_api_client_python.auth.rsa_auth import SymBotRSAAuth
 from sym_api_client_python.clients.sym_bot_client import SymBotClient
@@ -21,28 +22,41 @@ def configure_logging():
 
 
 def main():
-    print('Starting MI Flashcard Bot..')
+    print('Starting MI Flashcard Bot..\n')
 
-    # Configure log
+    # Configure logging
     configure_logging()
 
-    # RSA Auth flow: pass path to rsa config.json file
-    configure = SymConfig('resources/config.json')
-    configure.load_config()
-    auth = SymBotRSAAuth(configure)
+    # Load bot config
+    config = SymConfig('resources/config.json')
+    config.load_config()
+
+    # Load data file
+    data_file_path = 'python/data.csv'
+    if 'dataFilePath' in config.data and len(config.data['dataFilePath']) > 3:
+        data_file_path = config.data['dataFilePath']
+    print(f'\nLoading data file from {data_file_path}')
+    settings.data = pd.read_csv(data_file_path)
+
+    # Authenticate and initialise bot
+    auth = SymBotRSAAuth(config)
     auth.authenticate()
-    
-    fundslist = pd.read_csv('/Users/user/test_bot_amos/python/data.csv')
+    bot_client = SymBotClient(auth, config)
 
-    # Initialize SymBotClient with auth and configure objects
-    bot_client = SymBotClient(auth, configure)
+    # Determine admin room stream id
+    config_admin_room_name = config.data['adminRoomName']
+    room_search = bot_client.get_stream_client().search_rooms(config_admin_room_name, 0, 1)
+    if ('rooms' in room_search and len(room_search['rooms']) == 1):
+        room = room_search['rooms'][0]
+        admin_room_name = room['roomAttributes']['name']
+        admin_stream_id = room['roomSystemInfo']['id']
+        settings.admin_stream_id = admin_stream_id
+        print(f'Located admin room named [{admin_room_name}] at [{admin_stream_id}]')
+    else:
+        print(f'Cannot locate admin room named {config_admin_room_name}')
 
-    # Initialize datafeed service
+    # Set up datafeed service and listeners
     datafeed_event_service = bot_client.get_datafeed_event_service()
-
-    # Initialize listener objects and append them to datafeed_event_service
-    # Datafeed_event_service polls the datafeed and the event listeners
-    # respond to the respective types of events
     datafeed_event_service.add_im_listener(IMListenerImpl(bot_client))
     datafeed_event_service.add_room_listener(RoomListenerImpl(bot_client))
 
