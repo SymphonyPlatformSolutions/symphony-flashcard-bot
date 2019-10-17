@@ -17,8 +17,8 @@ class MessageProcessor:
         stream_id = self.message_parser.get_stream_id(msg)
         msg_text = self.message_parser.get_text(msg)
         command = msg_text[0].lower() if len(msg_text) > 0 else ''
-        #command_ISIN = msg_text[1].lower()
-        return stream_id, msg_text, command
+        command_ISIN = msg_text[1].lower() if len(msg_text) > 1 else ''
+        return stream_id, msg_text, command,command_ISIN
 
     def get_attachment(self, stream_id, message_id, file_id):
         attachment = self.message_client.get_msg_attachment(stream_id, message_id, file_id)
@@ -60,11 +60,17 @@ class MessageProcessor:
             self.send_message(stream_id, f'Sorry, I do not understand the command {command}')
 
     def processIM(self, msg):
-        stream_id, msg_text, command = self.parse_message(msg)
+        stream_id, msg_text, command, command_ISIN = self.parse_message(msg)
 
-        if command == '/isin':
+        if command == '/isin' and command_ISIN != '':
             print('doing isin')
-            self.send_message(stream_id, 'isin')
+
+            ISIN_msg = settings.data
+
+            ISIN_MSG= ISIN_msg.loc[ISIN_msg['ISIN (base ccy)'] == 'SG9999015176'] 
+
+            #somehow not correct when ISIN_MSG= ISIN_msg.loc[ISIN_msg['ISIN (base ccy)'] == command_ISIN] 
+            self.send_message(stream_id, ISIN_MSG)
 
         elif command == '/fundname':
             print('doing fundname')
