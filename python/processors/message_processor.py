@@ -14,12 +14,13 @@ class MessageProcessor:
         self.admin_processor = AdminProcessor(self.bot_client)
         self.card_processor = CardProcessor(self.bot_client)
         self.help_message = 'Welcome to MI Flash Bot'
+        self.card_fields = ['Funds','Factsheet / Offering Material \r\n(via Fundinfo)','Fund Specific Materials \r\n(via Intranet)','Base Ccy','Last Bloomberg Update','1 Mth Return (%)','3 Mths Return (%)','1 Yr Return (%)','3 Yr Ann Return (%)','AR*','Investment Objective','Investment Tenor','Investment Time Horizon','Dealing Frequency (Subscription)\r\n\r\nRefer to Funds Identifier tab for Notice Period','Loss Absorption Product','Complex Product']
 
     def parse_message(self, msg):
         stream_id = self.message_parser.get_stream_id(msg)
         msg_text = self.message_parser.get_text(msg)
         command = msg_text[0].lower() if len(msg_text) > 0 else ''
-        rest_of_message = msg_text[1] if len(msg_text) > 1 else ''
+        rest_of_message = str.join(' ', msg_text[1:]) if len(msg_text) > 1 else ''
         return stream_id, msg_text, command, rest_of_message
 
     def get_attachment(self, stream_id, message_id, file_id):
@@ -62,17 +63,45 @@ class MessageProcessor:
             self.send_message(stream_id, f'Sorry, I do not understand the command {command}')
 
     def processIM(self, msg):
-        stream_id, msg_text, command, isin = self.parse_message(msg)
+        userId = msg['user']['userId']
+        stream_id, msg_text, command, rest_of_message = self.parse_message(msg)
 
-        if command == '/isin' and isin != '':
+        if (command != '/isin' and command != '/fundname') or rest_of_message == '':
+            if command.isdigit() and userId in settings.user_state.keys():
+                choice = int(command) - 1
+                if choice <= len(settings.user_state[userId]):
+                    choice_text = settings.user_state[userId][choice]
+                    data_row = settings.data[settings.data['Funds'].str.contains(choice_text, na=False)]
+                    self.card_processor.send_card(stream_id, data_row.iloc[0])
+                else:
+                    self.send_message(stream_id, 'Invalid choice')
+            else:
+                self.send_message(stream_id, 'Please use /fundname [fund name] or /isin [ISIN]')
+            return
+
+        if command == '/isin':
             print('doing isin')
-            data_row = settings.data.loc[[isin.upper()], ['Funds','Factsheet / Offering Material \r\n(via Fundinfo)','Fund Specific Materials \r\n(via Intranet)','Base Ccy','Last Bloomberg Update','1 Mth Return (%)','3 Mths Return (%)','1 Yr Return (%)','3 Yr Ann Return (%)','AR*','Investment Objective','Investment Tenor','Investment Time Horizon','Dealing Frequency (Subscription)\r\n\r\nRefer to Funds Identifier tab for Notice Period','Loss Absorption Product','Complex Product']]
-            #data_row = settings.data.loc[[isin.upper()], ['Funds','1 Mth Return (%)','3 Mths Return (%)','1 Yr Return (%)']]
+            data_row = settings.data[settings.data['ISIN (base ccy)'].str.contains(rest_of_message, na=False)]
             self.card_processor.send_card(stream_id, data_row)
 
         elif command == '/fundname':
             print('doing fundname')
-            self.send_message(stream_id, 'fundname')
+            data_rows = settings.data[settings.data['Funds'].str.contains(rest_of_message, na=False)]
 
-        else:
-            self.send_message(stream_id, 'We only support the functions /fundname or /isin')
+            if len(data_rows) == 0:
+                self.send_message(stream_id, f'No results found for fund names with {rest_of_message}')
+            elif len(data_rows) == 1:
+                self.card_processor.send_card(stream_id, data_rows.iloc[0])
+            else:
+                results = []
+                results_str = ''
+
+                for index, row in data_rows.iterrows():
+                    results.append(row['Funds'])
+
+                settings.user_state[userId] = results
+
+                for i in range(len(results)):
+                    results_str += f"<li>{i+1}: {results[i]}</li>"
+
+                self.send_message(stream_id, f"Please choose one option: <ul>{results_str}</ul>")
