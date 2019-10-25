@@ -66,7 +66,8 @@ class MessageProcessor:
 
         if command == '/isin' and isin != '':
             print('doing isin')
-            data_row = settings.data.loc[isin.upper()]
+            data_row = settings.data.loc[[isin.upper()], ['Funds','Factsheet / Offering Material \r\n(via Fundinfo)','Fund Specific Materials \r\n(via Intranet)','Base Ccy','Last Bloomberg Update','1 Mth Return (%)','3 Mths Return (%)','1 Yr Return (%)','3 Yr Ann Return (%)','AR*','Investment Objective','Investment Tenor','Investment Time Horizon','Dealing Frequency (Subscription)\r\n\r\nRefer to Funds Identifier tab for Notice Period','Loss Absorption Product','Complex Product']]
+            #data_row = settings.data.loc[[isin.upper()], ['Funds','1 Mth Return (%)','3 Mths Return (%)','1 Yr Return (%)']]
             self.card_processor.send_card(stream_id, data_row)
 
         elif command == '/fundname':
