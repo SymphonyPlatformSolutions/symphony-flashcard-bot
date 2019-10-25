@@ -36,7 +36,7 @@ def main():
     if 'dataFilePath' in config.data and len(config.data['dataFilePath']) > 3:
         data_file_path = config.data['dataFilePath']
     print(f'\nLoading data file from {data_file_path}')
-    settings.data = pd.read_csv(data_file_path)
+    settings.data = pd.read_csv(data_file_path, index_col='ISIN (base ccy)')
 
     # Authenticate and initialise bot
     auth = SymBotRSAAuth(config)
