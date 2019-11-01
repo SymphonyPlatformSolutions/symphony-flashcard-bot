@@ -1,6 +1,7 @@
 import re
 import base64
 import settings
+from collections import Counter
 from sym_api_client_python.clients.sym_bot_client import SymBotClient
 from sym_api_client_python.processors.sym_message_parser import SymMessageParser
 from .admin_processor import AdminProcessor
@@ -78,21 +79,21 @@ class MessageProcessor:
                 data_field = 'ISIN (base ccy)'
                 field_label = 'ISIN codes'
 
-            data_rows = settings.data[settings.data[data_field].str.contains(rest_of_message, flags=re.IGNORECASE, na=False)]
+            data_rows = self.doSearch(settings.data, rest_of_message, data_field)
 
             if len(data_rows) == 0:
                 self.send_message(stream_id, f'No results found for {field_label} matching {rest_of_message}')
             elif len(data_rows) == 1:
                 self.card_processor.send_card(stream_id, data_rows)
             else:
-                self.showMultiOptions(userId, stream_id, data_rows)
+                self.showMultiOptions(userId, stream_id, data_rows, rest_of_message)
 
         # User performs a multiple-choice selection
         elif command.isdigit() and userId in settings.user_state.keys():
             choice = int(command) - 1
             if choice <= len(settings.user_state[userId]):
                 choice_text = settings.user_state[userId][choice]
-                data_row = settings.data[settings.data['Funds'].str.contains(choice_text, na=False)]
+                data_row = settings.data[settings.data.Funds == choice_text]
                 self.card_processor.send_card(stream_id, data_row)
                 del settings.user_state[userId]
             else:
@@ -102,11 +103,33 @@ class MessageProcessor:
         else:
             self.send_message(stream_id, 'Please use /fundname [fund name] or /isin [ISIN]')
 
-    def showMultiOptions(self, userId, stream_id, data_rows):
-        # slice first 10 results and save
+    def doSearch(self, data_rows, rest_of_message, data_field):
+        search_tokens = set(rest_of_message.lower().split())
+
+        # Partial/full-text search
+        if len(search_tokens) == 1:
+            return settings.data[settings.data[data_field].str.contains(rest_of_message, flags=re.IGNORECASE, na=False)]
+
+        # Token search
+        for i in data_rows.index:
+            # Count distinct matching tokens between the search query and data values
+            value_tokens = set(data_rows.loc[i, 'Funds'].lower().split())
+            match_dict = { k: dict(Counter(value_tokens)).get(k, 0) for k in search_tokens }
+            sort_weight = sum(match_dict.values())
+            data_rows.loc[i, 'sort_weight'] = sort_weight
+
+        # Remove entries with matches less than the maximum number
+        max_matches = data_rows['sort_weight'].max()
+        data_rows = data_rows[data_rows.sort_weight == max_matches]
+
+        # Sort by token matches in descending then fund name in ascending
+        return data_rows.sort_values(['sort_weight', 'Funds'], ascending=[False, True])
+
+    def showMultiOptions(self, userId, stream_id, data_rows, rest_of_message):
+        # Extract funds column, slice first 10 results and save
         results = list(data_rows['Funds'])[:10]
         settings.user_state[userId] = results
 
-        # format results as list items with indexes and send to user
+        # Format results as list items with indexes and send to user
         results_str = ''.join([f"<li>{i+1}: {result}</li>" for i, result in enumerate(results)])
         self.send_message(stream_id, f"Please choose one option: <ul>{results_str}</ul>")
