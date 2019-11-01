@@ -71,8 +71,10 @@ class MessageProcessor:
                 choice = int(command) - 1
                 if choice <= len(settings.user_state[userId]):
                     choice_text = settings.user_state[userId][choice]
-                    data_row = settings.data[settings.data['Funds'].str.contains(choice_text, na=False)]
-                    self.card_processor.send_card(stream_id, data_row.iloc[0])
+                    data_rows = settings.data[settings.data['Funds'].str.contains(choice_text, na=False)]
+                    data_row = data_rows.iloc[0][self.card_fields]
+                    self.card_processor.send_card(stream_id, data_row)
+                    del settings.user_state[userId]
                 else:
                     self.send_message(stream_id, 'Invalid choice')
             else:
@@ -82,7 +84,7 @@ class MessageProcessor:
         if command == '/isin':
             print('doing isin')
             data_row = settings.data[settings.data['ISIN (base ccy)'].str.contains(rest_of_message, na=False)]
-            self.card_processor.send_card(stream_id, data_row)
+            self.card_processor.send_card(stream_id, data_row[self.card_fields])
 
         elif command == '/fundname':
             print('doing fundname')
@@ -91,7 +93,7 @@ class MessageProcessor:
             if len(data_rows) == 0:
                 self.send_message(stream_id, f'No results found for fund names with {rest_of_message}')
             elif len(data_rows) == 1:
-                self.card_processor.send_card(stream_id, data_rows.iloc[0])
+                self.card_processor.send_card(stream_id, data_rows.iloc[0][self.card_fields])
             else:
                 results = []
                 results_str = ''
