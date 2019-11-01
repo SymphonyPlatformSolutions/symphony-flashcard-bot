@@ -1,3 +1,4 @@
+import re
 import base64
 import settings
 from sym_api_client_python.clients.sym_bot_client import SymBotClient
@@ -14,7 +15,6 @@ class MessageProcessor:
         self.admin_processor = AdminProcessor(self.bot_client)
         self.card_processor = CardProcessor(self.bot_client)
         self.help_message = 'Welcome to MI Flash Bot'
-        self.card_fields = ['Funds','Factsheet / Offering Material \r\n(via Fundinfo)','Fund Specific Materials \r\n(via Intranet)','Base Ccy','Last Bloomberg Update','1 Mth Return (%)','3 Mths Return (%)','1 Yr Return (%)','3 Yr Ann Return (%)','AR*','Investment Objective','Investment Tenor','Investment Time Horizon','Dealing Frequency (Subscription)\r\n\r\nRefer to Funds Identifier tab for Notice Period','Loss Absorption Product','Complex Product']
 
     def parse_message(self, msg):
         stream_id = self.message_parser.get_stream_id(msg)
@@ -22,12 +22,6 @@ class MessageProcessor:
         command = msg_text[0].lower() if len(msg_text) > 0 else ''
         rest_of_message = str.join(' ', msg_text[1:]) if len(msg_text) > 1 else ''
         return stream_id, msg_text, command, rest_of_message
-
-    def get_json(self, data_row):
-        if type(data_row).__name__ == 'DataFrame':
-            data_row = data_row.iloc[0]
-        data_row = data_row[self.card_fields]
-        return data_row.to_json()
 
     def get_attachment(self, stream_id, message_id, file_id):
         attachment = self.message_client.get_msg_attachment(stream_id, message_id, file_id)
@@ -78,7 +72,7 @@ class MessageProcessor:
                 if choice <= len(settings.user_state[userId]):
                     choice_text = settings.user_state[userId][choice]
                     data_row = settings.data[settings.data['Funds'].str.contains(choice_text, na=False)]
-                    self.card_processor.send_card(stream_id, self.get_json(data_row))
+                    self.card_processor.send_card(stream_id, data_row)
                     del settings.user_state[userId]
                 else:
                     self.send_message(stream_id, 'Invalid choice')
@@ -88,17 +82,17 @@ class MessageProcessor:
 
         if command == '/isin':
             print('doing isin')
-            data_row = settings.data[settings.data['ISIN (base ccy)'].str.contains(rest_of_message, na=False)]
-            self.card_processor.send_card(stream_id, self.get_json(data_row))
+            data_row = settings.data[settings.data['ISIN (base ccy)'].str.contains(rest_of_message, flags=re.IGNORECASE, na=False)]
+            self.card_processor.send_card(stream_id, data_row)
 
         elif command == '/fundname':
             print('doing fundname')
-            data_rows = settings.data[settings.data['Funds'].str.contains(rest_of_message, na=False)]
+            data_rows = settings.data[settings.data['Funds'].str.contains(rest_of_message, flags=re.IGNORECASE, na=False)]
 
             if len(data_rows) == 0:
                 self.send_message(stream_id, f'No results found for fund names with {rest_of_message}')
             elif len(data_rows) == 1:
-                self.card_processor.send_card(stream_id, self.get_json(data_rows))
+                self.card_processor.send_card(stream_id, data_rows)
             else:
                 results = []
                 results_str = ''
