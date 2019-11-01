@@ -42,6 +42,9 @@ class CardProcessor:
             data_row = data_row.iloc[0]
 
         data_row = data_row[self.card_fields]
+        data_row.fillna("N/A", inplace = True)
         data_json = '{ "fund": ' + data_row.to_json() + '}'
-    
+
+        print(data_json)
+
         self.send_message(stream_id, settings.card_template, data_json)
