@@ -1,18 +1,30 @@
 <div class="entity" data-entity-id="fund">
   <h2>MI Flashcard</h2>
-  <table style="border:1px solid red;margin:0;">
+  <br/>
+  <table style="border-style: solid;border-width: 2px;border-color:rgb(0, 88, 140);margin:0;">
+    
     <thead>
       <tr>
-        <td colspan ="2" style="padding: 0;"><div class="tempo-bg-color--red"><span class="tempo-text-color--white"><span style="font-size: 18pt;"><b>
+        <td colspan ="2" style="padding: 0;background-color:rgb(0, 88, 140);text-align: center;"><span class="tempo-text-color--white"><span style="font-size: 18pt;"><b>
           ${entity['fund']['Funds']}
-        </b></span></span></div></td>
+          </b></span></span></td>
       </tr>
     </thead>
 
     <tbody style="padding:0;">
       <tr>
         <td style="padding:0px;">
-          <table style="border:1px solid red;margin:0;">
+          
+          <table style="margin:0;">
+            
+           <thead>
+                <tr>
+                  <td colspan ="2" style="padding: 0;text-align: center;"><span style="font-size: 14pt;"><b>
+                    SUITABILITY
+                  </b></span></td>
+                </tr>
+              </thead>
+            
             <tbody>
               <tr>
                 <td>NAV</td>
@@ -20,70 +32,80 @@
               </tr>
               <tr>
                 <td>Base Currency</td>
-                <td>USD</td>
+                <td>${entity['fund']['Base Ccy']}</td>
               </tr>
               <tr>
                 <td>ISIN (Base Currency)</td>
-                <td>IEOOBF5GRB76</td>
+                <td>${entity['fund']['ISIN (base ccy)']}</td>
               </tr>
               <tr>
                 <td>Investment Objective</td>
-                <td>Income Generation</td>
+                <td>${entity['fund']['Investment Objective']}</td>
               </tr>
               <tr>
                 <td>Investment Tenor</td>
-                <td>N/A</td>
+                <td>${entity['fund']['Investment Tenor']}</td>
               </tr>
               <tr>
                 <td>Investment Time Horizon</td>
-                <td>>5 years</td>
+                <td>>${entity['fund']['Investment Time Horizon']}</td>
               </tr>
               <tr>
                 <td>Loss Absorption Product</td>
-                <td>No</td>
+                <td>${entity['fund']['Loss Absorption Product']}</td>
               </tr>
               <tr>
                 <td>Complex Product</td>
-                <td>No</td>
+                <td>${entity['fund']['Complex Product']}</td>
               </tr>
               <tr>
                 <td>Fund Factsheet</td>
-                <td><a href="http://www.symphony.com">Link</a></td>
+                <td><a href="${entity['fund']['Factsheet / Offering Material (via Fundinfo)']}">Link</a></td>
               </tr>
               <tr>
                 <td>More Information</td>
-                <td><a href="http://www.symphony.com">Link</a></td>
+                <td><a href="${entity['fund']['Fund Specific Materials (via Intranet)']}">Link</a></td>
               </tr>
             </tbody>
           </table>
         </td>
 
         <td style="padding:0px;">
-          <table style="border:1px solid red;margin:0;">
+          
+          <table style="margin:0;">
+            
+			<thead>
+                <tr>
+                  <td colspan ="2" style="padding: 0;text-align: center;"><span style="font-size: 14pt;"><b>
+                    PERFORMANCE
+                  </b></span></td>
+                </tr>
+            </thead>
+            
             <tbody>
               <tr>
                 <td>Last Bloomberg Update</td>
-                <td>20191010</td>
+                <td>${entity['fund']['Last Bloomberg Update']}</td>
               </tr>
               <tr>
                 <td>1 Month Return (%)</td>
-                <td>0.38</td>
+                <td>${entity['fund']['1 Mth Return (%)']}</td>
               </tr>
               <tr>
                 <td>3 Month Return (%)</td>
-                <td>1.3</td>
+                <td>${entity['fund']['3 Mths Return (%)']}</td>
               </tr>
               <tr>
                 <td>YTD Month Return (%)</td>
-                <td>3.58</td>
+                <td>${entity['fund']['YTD Return (%)']}</td>
               </tr>
               <tr>
                 <td>1 Year Return (%)</td>
-                <td>4.7</td>
+                <td>${entity['fund']['1 Yr Return (%)']}</td>
               </tr>
               <tr>
                 <td>3 Year Return (%)</td>
-                <td>N/A</td>
+                <td>${entity['fund']['3 Yr Ann Return (%)']}</td>
               </tr>
               <tr>
                 <td><br/></td>
@@ -91,15 +113,15 @@
               </tr>
               <tr>
                 <td>Risk Rating</td>
-                <td>2</td>
+                <td>${entity['fund']['Risk Rating']}</td>
               </tr>
               <tr>
                 <td>AR*</td>
-                <td>70%</td>
+                <td>${entity['fund']['AR*']}</td>
               </tr>
               <tr>
                 <td>Dealing Frequency</td>
-                <td>Daily</td>
+                <td>${entity['fund']['Dealing Frequency (Subscription) Refer to Funds Identifier tab for Notice Period']}</td>
               </tr>
             </tbody>
           </table>
@@ -109,7 +131,7 @@
 
     <tfoot>
       <tr>
-        <td colspan ="2" style="border:2px solid red;padding: 0;"><span style="font-size: 9pt;"><br/>
+        <td colspan ="2" style="border-style: solid;border-width: 2px;border-color:rgb(0, 88, 140);padding: 0;"><span style="font-size: 9pt;"><br/>
           Please note that this information is strictly for internal use only and must not be circulated
         </span></td>
       </tr>
