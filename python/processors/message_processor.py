@@ -15,7 +15,8 @@ class MessageProcessor:
         self.message_parser = SymMessageParser()
         self.admin_processor = AdminProcessor(self.bot_client)
         self.card_processor = CardProcessor(self.bot_client)
-        self.help_message = 'Welcome to MI Flash Bot'
+        self.help_message = 'Welcome to MI Flash Bot. Please use the following commands:<ul><li><b>/help</b>: show this message</li><li><b>/fundname [search query]</b>: search for funds by name</li><li><b>/isin [search query]</b>: search for funds by ISIN</li></ul>'
+        self.help_message_admin = 'Welcome to MI Flash Bot. Please use the following commands:<ul><li><b>/help</b>: show this message</li><li><b>/download</b>: get the active data file</li><li><b>/upload</b>: used together with an attached data file to replace the active data file</li><li><b>/blast [message]</b>: used together with an attached file containing 1 email address per line to blast IM messages</li></ul>'
 
     def parse_message(self, msg):
         stream_id = self.message_parser.get_stream_id(msg)
@@ -33,22 +34,24 @@ class MessageProcessor:
         self.message_client.send_msg(stream_id, dict(message=f'<messageML>{msg_text}</messageML>'))
 
     def processROOM(self, msg):
-        stream_id, msg_text, command = self.parse_message(msg)
+        displayName = msg['user']['displayName']
+        stream_id, msg_text, command, rest_of_message = self.parse_message(msg)
 
         if stream_id != settings.admin_stream_id:
             print(f'Ignoring room message from non-admin stream {stream_id}')
             return
 
+        print(f'Executing admin {command} query from {displayName}')
+
         if command == '/help':
-            print('doing help')
-            self.send_message(stream_id, self.help_message)
+            self.send_message(stream_id, self.help_message_admin)
 
         elif command == '/upload':
-            print('doing upload')
+            # TODO: Upload
             self.send_message(stream_id, 'upload')
 
         elif command == '/download':
-            print('doing download')
+            # TODO: Download
             self.send_message(stream_id, 'download')
 
         elif command == '/blast':
@@ -58,19 +61,30 @@ class MessageProcessor:
             if 'attachments' not in msg or len(msg['attachments']) != 1:
                 self.send_message(stream_id, 'Please attach 1 file containing an email per line along with /blast')
                 return
+            print(f'Sending blast message: {rest_of_message}')
             attachment = self.get_attachment(stream_id, msg['messageId'], msg['attachments'][0]['id'])
-            self.admin_processor.blast_messages(attachment, str.join(' ', msg_text[1:]))
+            successful_recipients = self.admin_processor.blast_messages(attachment, rest_of_message)
+            self.send_message(stream_id, f'Blast to {successful_recipients} recipients complete')
+            print(f'Blast to {successful_recipients} recipients complete')
 
         elif command.startswith('/'):
             self.send_message(stream_id, f'Sorry, I do not understand the command {command}')
 
     def processIM(self, msg):
         userId = msg['user']['userId']
+        displayName = msg['user']['displayName']
         stream_id, msg_text, command, rest_of_message = self.parse_message(msg)
 
+        # Administrative commands
+        if command == '/help':
+            self.send_message(stream_id, self.help_message)
+
+        elif command == '/clear':
+            self.send_message(stream_id, '<br/>' * 50)
+
         # User performs an initial command search
-        if command == '/isin' or command == '/fundname':
-            print(f'Executing {command} query from {userId} against {rest_of_message}')
+        elif command == '/isin' or command == '/fundname':
+            print(f'Executing {command} query from {displayName} against {rest_of_message}')
 
             if command == '/fundname':
                 data_field = 'Funds'
