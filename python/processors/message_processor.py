@@ -103,13 +103,10 @@ class MessageProcessor:
             self.send_message(stream_id, 'Please use /fundname [fund name] or /isin [ISIN]')
 
     def showMultiOptions(self, userId, stream_id, data_rows):
-        results = []
-        results_str = ''
-
-        for index, row in data_rows.iterrows():
-            results.append(row['Funds'])
+        # slice first 10 results and save
+        results = list(data_rows['Funds'])[:10]
         settings.user_state[userId] = results
 
-        for i in range(len(results)):
-            results_str += f"<li>{i+1}: {results[i]}</li>"
+        # format results as list items with indexes and send to user
+        results_str = ''.join([f"<li>{i+1}: {result}</li>" for i, result in enumerate(results)])
         self.send_message(stream_id, f"Please choose one option: <ul>{results_str}</ul>")
