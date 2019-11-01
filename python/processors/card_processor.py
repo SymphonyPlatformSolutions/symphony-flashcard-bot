@@ -27,6 +27,7 @@ class CardProcessor:
         ]
 
     def send_message(self, stream_id, msg_text, data_payload):
+        msg_text = msg_text.replace('&', '&amp;')
         message_payload = dict(message=f'<messageML>{msg_text}</messageML>', data=data_payload)
         self.bot_client.get_message_client().send_msg(stream_id, message_payload)
         self.bot_client.get_message_client().send_msg
@@ -34,6 +35,7 @@ class CardProcessor:
     def send_card(self, stream_id, data_row):
         if type(data_row).__name__ == 'DataFrame':
             data_row = data_row.iloc[0]
+
         data_row = data_row[self.card_fields]
         data_json = '{ "fund": ' + data_row.to_json() + '}'
         self.send_message(stream_id, settings.card_template, data_json)

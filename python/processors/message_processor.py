@@ -28,6 +28,7 @@ class MessageProcessor:
         return base64.b64decode(attachment)
 
     def send_message(self, stream_id, msg_text):
+        msg_text = msg_text.replace('&', '&amp;')
         self.message_client.send_msg(stream_id, dict(message=f'<messageML>{msg_text}</messageML>'))
 
     def processROOM(self, msg):
@@ -66,43 +67,49 @@ class MessageProcessor:
         userId = msg['user']['userId']
         stream_id, msg_text, command, rest_of_message = self.parse_message(msg)
 
-        if (command != '/isin' and command != '/fundname') or rest_of_message == '':
-            if command.isdigit() and userId in settings.user_state.keys():
-                choice = int(command) - 1
-                if choice <= len(settings.user_state[userId]):
-                    choice_text = settings.user_state[userId][choice]
-                    data_row = settings.data[settings.data['Funds'].str.contains(choice_text, na=False)]
-                    self.card_processor.send_card(stream_id, data_row)
-                    del settings.user_state[userId]
-                else:
-                    self.send_message(stream_id, 'Invalid choice')
+        # User performs an initial command search
+        if command == '/isin' or command == '/fundname':
+            print(f'Executing {command} query from {userId} against {rest_of_message}')
+
+            if command == '/fundname':
+                data_field = 'Funds'
+                field_label = 'fund names'
             else:
-                self.send_message(stream_id, 'Please use /fundname [fund name] or /isin [ISIN]')
-            return
+                data_field = 'ISIN (base ccy)'
+                field_label = 'ISIN codes'
 
-        if command == '/isin':
-            print('doing isin')
-            data_row = settings.data[settings.data['ISIN (base ccy)'].str.contains(rest_of_message, flags=re.IGNORECASE, na=False)]
-            self.card_processor.send_card(stream_id, data_row)
-
-        elif command == '/fundname':
-            print('doing fundname')
-            data_rows = settings.data[settings.data['Funds'].str.contains(rest_of_message, flags=re.IGNORECASE, na=False)]
+            data_rows = settings.data[settings.data[data_field].str.contains(rest_of_message, flags=re.IGNORECASE, na=False)]
 
             if len(data_rows) == 0:
-                self.send_message(stream_id, f'No results found for fund names with {rest_of_message}')
+                self.send_message(stream_id, f'No results found for {field_label} matching {rest_of_message}')
             elif len(data_rows) == 1:
                 self.card_processor.send_card(stream_id, data_rows)
             else:
-                results = []
-                results_str = ''
+                self.showMultiOptions(userId, stream_id, data_rows)
 
-                for index, row in data_rows.iterrows():
-                    results.append(row['Funds'])
+        # User performs a multiple-choice selection
+        elif command.isdigit() and userId in settings.user_state.keys():
+            choice = int(command) - 1
+            if choice <= len(settings.user_state[userId]):
+                choice_text = settings.user_state[userId][choice]
+                data_row = settings.data[settings.data['Funds'].str.contains(choice_text, na=False)]
+                self.card_processor.send_card(stream_id, data_row)
+                del settings.user_state[userId]
+            else:
+                self.send_message(stream_id, 'Invalid choice')
 
-                settings.user_state[userId] = results
+        # User does anything else
+        else:
+            self.send_message(stream_id, 'Please use /fundname [fund name] or /isin [ISIN]')
 
-                for i in range(len(results)):
-                    results_str += f"<li>{i+1}: {results[i]}</li>"
+    def showMultiOptions(self, userId, stream_id, data_rows):
+        results = []
+        results_str = ''
 
-                self.send_message(stream_id, f"Please choose one option: <ul>{results_str}</ul>")
+        for index, row in data_rows.iterrows():
+            results.append(row['Funds'])
+        settings.user_state[userId] = results
+
+        for i in range(len(results)):
+            results_str += f"<li>{i+1}: {results[i]}</li>"
+        self.send_message(stream_id, f"Please choose one option: <ul>{results_str}</ul>")
