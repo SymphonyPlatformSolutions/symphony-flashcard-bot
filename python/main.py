@@ -39,6 +39,10 @@ def main():
     settings.data = pd.read_csv(data_file_path)
     settings.user_state = {}
 
+    # Load card template
+    with open('resources/template.ftl', 'r') as file:
+        settings.card_template = file.read().replace('\n', '')
+
     # Authenticate and initialise bot
     auth = SymBotRSAAuth(config)
     auth.authenticate()

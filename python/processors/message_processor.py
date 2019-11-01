@@ -23,6 +23,12 @@ class MessageProcessor:
         rest_of_message = str.join(' ', msg_text[1:]) if len(msg_text) > 1 else ''
         return stream_id, msg_text, command, rest_of_message
 
+    def get_json(self, data_row):
+        if type(data_row).__name__ == 'DataFrame':
+            data_row = data_row.iloc[0]
+        data_row = data_row[self.card_fields]
+        return data_row.to_json()
+
     def get_attachment(self, stream_id, message_id, file_id):
         attachment = self.message_client.get_msg_attachment(stream_id, message_id, file_id)
         return base64.b64decode(attachment)
@@ -71,9 +77,8 @@ class MessageProcessor:
                 choice = int(command) - 1
                 if choice <= len(settings.user_state[userId]):
                     choice_text = settings.user_state[userId][choice]
-                    data_rows = settings.data[settings.data['Funds'].str.contains(choice_text, na=False)]
-                    data_row = data_rows.iloc[0][self.card_fields]
-                    self.card_processor.send_card(stream_id, data_row)
+                    data_row = settings.data[settings.data['Funds'].str.contains(choice_text, na=False)]
+                    self.card_processor.send_card(stream_id, self.get_json(data_row))
                     del settings.user_state[userId]
                 else:
                     self.send_message(stream_id, 'Invalid choice')
@@ -84,7 +89,7 @@ class MessageProcessor:
         if command == '/isin':
             print('doing isin')
             data_row = settings.data[settings.data['ISIN (base ccy)'].str.contains(rest_of_message, na=False)]
-            self.card_processor.send_card(stream_id, data_row[self.card_fields])
+            self.card_processor.send_card(stream_id, self.get_json(data_row))
 
         elif command == '/fundname':
             print('doing fundname')
@@ -93,7 +98,7 @@ class MessageProcessor:
             if len(data_rows) == 0:
                 self.send_message(stream_id, f'No results found for fund names with {rest_of_message}')
             elif len(data_rows) == 1:
-                self.card_processor.send_card(stream_id, data_rows.iloc[0][self.card_fields])
+                self.card_processor.send_card(stream_id, self.get_json(data_rows))
             else:
                 results = []
                 results_str = ''
