@@ -16,7 +16,7 @@ def configure_logging():
     logging.basicConfig(
         filename='./logs/mi-bot.log',
         format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-        filemode='w', level=logging.DEBUG
+        level=logging.DEBUG
     )
     logging.getLogger("urllib3").setLevel(logging.WARNING)
 
