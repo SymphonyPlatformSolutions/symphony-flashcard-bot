@@ -1,18 +1,18 @@
 {
-    "sessionAuthHost": "develop2.symphony.com",
+    "sessionAuthHost": "pod.symphony.com",
     "sessionAuthPort": 443,
-    "keyAuthHost": "develop2.symphony.com",
+    "keyAuthHost": "pod.symphony.com",
     "keyAuthPort": 443,
-    "podHost": "develop2.symphony.com",
+    "podHost": "pod.symphony.com",
     "podPort": 443,
-    "agentHost": "develop2.symphony.com",
+    "agentHost": "pod.symphony.com",
     "agentPort": 443,
     "authType": "rsa",
     "botPrivateKeyPath": "rsa/",
-    "botPrivateKeyName": "rsa-private-test_bot_amos.pem",
-    "botUsername": "amos-bot",
+    "botPrivateKeyName": "rsa-private-mi-bot.pem",
+    "botUsername": "mi-bot-username",
     "botEmailAddress": "bot-email@email.com",
     "truststorePath": "",
     "dataFilePath": "python/data.csv",
-    "adminRoomName": "MI Bot Room YS"
+    "adminRoomName": "MI Bot Admin Room"
 }
