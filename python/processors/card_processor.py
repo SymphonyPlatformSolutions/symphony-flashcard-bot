@@ -1,5 +1,5 @@
-import logging
-import settings
+import utils
+from utils import log
 from sym_api_client_python.clients.sym_bot_client import SymBotClient
 from sym_api_client_python.processors.sym_message_parser import SymMessageParser
 
@@ -44,7 +44,6 @@ class CardProcessor:
         data_row = data_row[self.card_fields]
         data_row.fillna("N/A", inplace = True)
         data_json = '{ "fund": ' + data_row.to_json() + '}'
-
-        print(data_json)
-
-        self.send_message(stream_id, settings.card_template, data_json)
+        log(f'Sent flashcard to {stream_id}')
+        log(data_json)
+        self.send_message(stream_id, utils.card_template, data_json)
