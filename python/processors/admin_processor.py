@@ -1,4 +1,4 @@
-import logging
+from utils import log
 from sym_api_client_python.clients.sym_bot_client import SymBotClient
 from sym_api_client_python.processors.sym_message_parser import SymMessageParser
 
@@ -16,7 +16,7 @@ class AdminProcessor:
         for email in emails:
             user = self.bot_client.get_user_client().get_user_from_email(email, True)
             if len(user) == 0:
-                print(f'Cannot find user with email {email}')
+                log(f'Cannot find user with email {email}')
                 continue
             user_id = user['id']
             stream_id = self.bot_client.get_stream_client().create_im([ user_id ])['id']

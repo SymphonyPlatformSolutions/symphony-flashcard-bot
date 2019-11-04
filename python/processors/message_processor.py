@@ -1,6 +1,7 @@
 import re
 import base64
-import settings
+import utils
+from utils import log
 from collections import Counter
 from sym_api_client_python.clients.sym_bot_client import SymBotClient
 from sym_api_client_python.processors.sym_message_parser import SymMessageParser
@@ -37,11 +38,11 @@ class MessageProcessor:
         displayName = msg['user']['displayName']
         stream_id, msg_text, command, rest_of_message = self.parse_message(msg)
 
-        if stream_id != settings.admin_stream_id:
-            print(f'Ignoring room message from non-admin stream {stream_id}')
+        if stream_id != utils.admin_stream_id:
+            log(f'Ignoring room message from non-admin stream {stream_id}')
             return
 
-        print(f'Executing admin {command} query from {displayName}')
+        log(f'Executing admin {command} query from {displayName}')
 
         if command == '/help':
             self.send_message(stream_id, self.help_message_admin)
@@ -61,11 +62,11 @@ class MessageProcessor:
             if 'attachments' not in msg or len(msg['attachments']) != 1:
                 self.send_message(stream_id, 'Please attach 1 file containing an email per line along with /blast')
                 return
-            print(f'Sending blast message: {rest_of_message}')
+            log(f'Sending blast message: {rest_of_message}')
             attachment = self.get_attachment(stream_id, msg['messageId'], msg['attachments'][0]['id'])
             successful_recipients = self.admin_processor.blast_messages(attachment, rest_of_message)
             self.send_message(stream_id, f'Blast to {successful_recipients} recipients complete')
-            print(f'Blast to {successful_recipients} recipients complete')
+            log(f'Blast to {successful_recipients} recipients complete')
 
         elif command.startswith('/'):
             self.send_message(stream_id, f'Sorry, I do not understand the command {command}')
@@ -84,7 +85,7 @@ class MessageProcessor:
 
         # User performs an initial command search
         elif command == '/isin' or command == '/fundname':
-            print(f'Executing {command} query from {displayName} against {rest_of_message}')
+            log(f'Executing {command} query from {displayName} against {rest_of_message}')
 
             if command == '/fundname':
                 data_field = 'Funds'
@@ -93,7 +94,7 @@ class MessageProcessor:
                 data_field = 'ISIN (base ccy)'
                 field_label = 'ISIN codes'
 
-            data_rows = self.doSearch(settings.data, rest_of_message, data_field)
+            data_rows = self.doSearch(utils.data, rest_of_message, data_field)
 
             if len(data_rows) == 0:
                 self.send_message(stream_id, f'No results found for {field_label} matching {rest_of_message}')
@@ -103,13 +104,13 @@ class MessageProcessor:
                 self.showMultiOptions(userId, stream_id, data_rows, rest_of_message)
 
         # User performs a multiple-choice selection
-        elif command.isdigit() and userId in settings.user_state.keys():
+        elif command.isdigit() and userId in utils.user_state.keys():
             choice = int(command) - 1
-            if choice <= len(settings.user_state[userId]):
-                choice_text = settings.user_state[userId][choice]
-                data_row = settings.data[settings.data.Funds == choice_text]
+            if choice <= len(utils.user_state[userId]):
+                choice_text = utils.user_state[userId][choice]
+                data_row = utils.data[utils.data.Funds == choice_text]
                 self.card_processor.send_card(stream_id, data_row)
-                del settings.user_state[userId]
+                del utils.user_state[userId]
             else:
                 self.send_message(stream_id, 'Invalid choice')
 
@@ -122,7 +123,7 @@ class MessageProcessor:
 
         # Partial/full-text search
         if len(search_tokens) == 1:
-            return settings.data[settings.data[data_field].str.contains(rest_of_message, flags=re.IGNORECASE, na=False)]
+            return utils.data[utils.data[data_field].str.contains(rest_of_message, flags=re.IGNORECASE, na=False)]
 
         # Token search
         for i in data_rows.index:
@@ -142,7 +143,7 @@ class MessageProcessor:
     def showMultiOptions(self, userId, stream_id, data_rows, rest_of_message):
         # Extract funds column, slice first 10 results and save
         results = list(data_rows['Funds'])[:10]
-        settings.user_state[userId] = results
+        utils.user_state[userId] = results
 
         # Format results as list items with indexes and send to user
         results_str = ''.join([f"<li>{i+1}: {result}</li>" for i, result in enumerate(results)])
