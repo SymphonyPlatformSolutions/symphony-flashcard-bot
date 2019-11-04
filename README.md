@@ -51,5 +51,10 @@ service account details, data file location and the name of the admin room.
 }
 ```
 # Deployment
-1. For the very first deployment, install dependencies: ```pip install -r requirements.txt```
+1. For the very first deployment, prepare the environment:
+```bash
+python -m venv ./venv
+source ./venv/bin/activate
+pip install -r requirements.txt
+```
 2. Run the bot: ```python python/main.py```
