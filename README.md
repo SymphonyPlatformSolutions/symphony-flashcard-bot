@@ -1,6 +1,8 @@
 ## MI Flashcard Bot
 This bot reads off a CSV file as a data store of managed investment products, allowing users to query funds by name or ISIN and obtain a data flashcard of the requested fund.
 
+![](demo.png)
+
 ## Requirements
 * Python 3
 
