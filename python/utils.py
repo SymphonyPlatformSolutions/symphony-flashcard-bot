@@ -1,4 +1,5 @@
 import logging
+from sym_api_client_python.clients.sym_bot_client import SymBotClient
 from pathlib import Path
 
 def init():
