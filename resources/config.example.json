@@ -13,6 +13,6 @@
     "botUsername": "mi-bot-username",
     "botEmailAddress": "bot-email@email.com",
     "truststorePath": "",
-    "dataFilePath": "python/data.csv",
+    "dataFilePath": "resources/data.csv",
     "adminRoomName": "MI Bot Admin Room"
 }

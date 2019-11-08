@@ -18,7 +18,7 @@ def main():
     config.load_config()
 
     # Load data file
-    data_file_path = 'python/data.csv'
+    data_file_path = 'resources/data.csv'
     if 'dataFilePath' in config.data and len(config.data['dataFilePath']) > 3:
         data_file_path = config.data['dataFilePath']
     log(f'Loading data file from {data_file_path}')
