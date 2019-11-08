@@ -104,6 +104,7 @@ class MessageProcessor:
                 self.card_processor.send_card(stream_id, data_rows)
             else:
                 self.showMultiOptions(userId, stream_id, data_rows, rest_of_message)
+            utils.user_log(msg['user'], command, rest_of_message)
 
         # User performs a multiple-choice selection
         elif command.isdigit() and userId in utils.user_state.keys():
@@ -115,6 +116,7 @@ class MessageProcessor:
                 del utils.user_state[userId]
             else:
                 utils.send_message(stream_id, 'Invalid choice')
+            utils.user_log(msg['user'], '/fundname select', choice_text)
 
         # User does anything else
         else:
