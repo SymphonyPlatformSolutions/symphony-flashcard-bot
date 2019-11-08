@@ -17,7 +17,7 @@ class MessageProcessor:
         self.admin_processor = AdminProcessor(self.bot_client)
         self.card_processor = CardProcessor(self.bot_client)
         self.help_message = 'Welcome to MI Flash Bot. Please use the following commands:<ul><li><b>/help</b>: show this message</li><li><b>/fundname [search query]</b>: search for funds by name</li><li><b>/isin [search query]</b>: search for funds by ISIN</li></ul>'
-        self.help_message_admin = 'Welcome to MI Flash Bot. Please use the following commands:<ul><li><b>/help</b>: show this message</li><li><b>/download</b>: get the active data file</li><li><b>/upload</b>: used together with an attached data file to replace the active data file</li><li><b>/blast [message]</b>: used together with an attached file containing 1 email address per line to blast IM messages</li></ul>'
+        self.help_message_admin = 'Welcome to MI Flash Bot. Please use the following commands:<ul><li><b>/help</b>: show this message</li><li><b>/download</b>: get the active data file</li><li><b>/upload</b>: used together with an attached data file to replace the active data file</li><li><b>/blast [message]</b>: used together with an attached file containing 1 email address per line to blast IM messages</li><li><b>/logs</b>: get the bot activity log</li></ul>'
 
     def parse_message(self, msg):
         stream_id = self.message_parser.get_stream_id(msg)
@@ -54,6 +54,9 @@ class MessageProcessor:
         elif command == '/download':
             self.admin_processor.send_data_file(stream_id)
 
+        elif command == '/logs':
+            self.admin_processor.send_log_file(stream_id)
+
         elif command == '/blast':
             if len(msg_text) < 2:
                 utils.send_message(stream_id, 'Please use /blast [message]')
@@ -83,7 +86,7 @@ class MessageProcessor:
             utils.send_message(stream_id, '<br/>' * 50)
 
         # User performs an initial command search
-        elif command == '/isin' or command == '/fundname':
+        elif (command == '/isin' or command == '/fundname') and len(rest_of_message) > 0:
             log(f'Executing {command} query from {displayName} against {rest_of_message}')
 
             if command == '/fundname':

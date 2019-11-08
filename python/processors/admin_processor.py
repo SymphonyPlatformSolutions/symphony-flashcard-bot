@@ -23,6 +23,10 @@ class AdminProcessor:
             successful_recipients += 1
         return successful_recipients
 
+    def send_log_file(self, stream_id):
+        utils.send_message(stream_id, "The log file is attached", None, "mi-bot.txt", "logs/mi-bot.log")
+        None
+
     def send_data_file(self, stream_id):
         utils.send_message(stream_id, "The current data file is attached", None, "data.csv", utils.data_file_path)
         None
