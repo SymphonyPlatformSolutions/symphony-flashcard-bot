@@ -104,5 +104,6 @@
   </table>
 </div>
 <span style="font-size:9pt">Please note that this information is strictly for internal use only and must not be circulated</span>
+<#if entity['fund']['Extra Remarks']!="N/A">
 <br/><span style="font-size:9pt">${entity['fund']['Extra Remarks']}</span>  
- 
+ </#if>
