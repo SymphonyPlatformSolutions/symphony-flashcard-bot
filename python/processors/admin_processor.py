@@ -2,6 +2,7 @@ from utils import log
 import utils
 from sym_api_client_python.clients.sym_bot_client import SymBotClient
 from sym_api_client_python.processors.sym_message_parser import SymMessageParser
+import pandas as pd
 
 
 class AdminProcessor:
@@ -22,9 +23,17 @@ class AdminProcessor:
             successful_recipients += 1
         return successful_recipients
 
-    def replace_data_file(self, stream_id):
-        utils.send_message(stream_id, "Hello")
+    def send_data_file(self, stream_id):
+        utils.send_message(stream_id, "The current data file is attached", None, "data.csv", utils.data_file_path)
         None
 
-    def replace_data_file(self, stream_id, attachment):
-        None
+    def replace_data_file(self, stream_id, file):
+        log('Writing new data file')
+        f = open(utils.data_file_path, 'wb')
+        f.write(file)
+        f.close()
+
+        log(f'Loading data file from {utils.data_file_path}')
+        utils.data = pd.read_csv(utils.data_file_path)
+        utils.user_state = {}
+        utils.send_message(stream_id, "The current data file has been replaced")

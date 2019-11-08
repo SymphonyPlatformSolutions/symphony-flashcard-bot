@@ -18,11 +18,11 @@ def main():
     config.load_config()
 
     # Load data file
-    data_file_path = 'resources/data.csv'
+    utils.data_file_path = 'resources/data.csv'
     if 'dataFilePath' in config.data and len(config.data['dataFilePath']) > 3:
-        data_file_path = config.data['dataFilePath']
-    log(f'Loading data file from {data_file_path}')
-    utils.data = pd.read_csv(data_file_path)
+        utils.data_file_path = config.data['dataFilePath']
+    log(f'Loading data file from {utils.data_file_path}')
+    utils.data = pd.read_csv(utils.data_file_path)
     utils.user_state = {}
 
     # Load card template

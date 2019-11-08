@@ -5,6 +5,7 @@ from pathlib import Path
 def init():
     global bot_client
     global admin_stream_id
+    global data_file_path
     global data
     global user_state
     global card_template
@@ -30,13 +31,15 @@ def log(message, data = None):
         logging.info(message)
         logging.info(data)
 
-def send_message(stream_id, msg_text, data_payload = None, attachment = None):
+def send_message(stream_id, msg_text, data = None, filename = None, attachment = None):
     msg_text = msg_text.replace('&', '&amp;')
-    message_payload = dict(message=f'<messageML>{msg_text}</messageML>')
+    msg_text = f'<messageML>{msg_text}</messageML>'
+    message_payload = dict(message=msg_text)
 
-    if data_payload is not None:
-        message_payload['data'] = data_payload.replace('&', '&amp;')
-    if attachment is not None:
-        None
+    if filename is not None and attachment is not None:
+        bot_client.get_message_client().send_msg_with_attachment(stream_id, msg_text, filename, attachment)
+        return
 
+    if data is not None:
+        message_payload['data'] = data.replace('&', '&amp;')
     bot_client.get_message_client().send_msg(stream_id, message_payload)
