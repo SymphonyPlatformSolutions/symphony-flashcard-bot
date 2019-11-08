@@ -2,6 +2,7 @@ import logging
 from pathlib import Path
 
 def init():
+    global bot_client
     global admin_stream_id
     global data
     global user_state
@@ -27,3 +28,14 @@ def log(message, data = None):
         print(data)
         logging.info(message)
         logging.info(data)
+
+def send_message(stream_id, msg_text, data_payload = None, attachment = None):
+    msg_text = msg_text.replace('&', '&amp;')
+    message_payload = dict(message=f'<messageML>{msg_text}</messageML>')
+
+    if data_payload is not None:
+        message_payload['data'] = data_payload.replace('&', '&amp;')
+    if attachment is not None:
+        None
+
+    bot_client.get_message_client().send_msg(stream_id, message_payload)

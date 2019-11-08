@@ -32,11 +32,11 @@ def main():
     # Authenticate and initialise bot
     auth = SymBotRSAAuth(config)
     auth.authenticate()
-    bot_client = SymBotClient(auth, config)
+    utils.bot_client = SymBotClient(auth, config)
 
     # Determine admin room stream id
     config_admin_room_name = config.data['adminRoomName']
-    room_search = bot_client.get_stream_client().search_rooms(config_admin_room_name, 0, 1)
+    room_search = utils.bot_client.get_stream_client().search_rooms(config_admin_room_name, 0, 1)
     if ('rooms' in room_search and len(room_search['rooms']) == 1):
         room = room_search['rooms'][0]
         admin_room_name = room['roomAttributes']['name']
@@ -47,9 +47,9 @@ def main():
         log(f'Cannot locate admin room named {config_admin_room_name}')
 
     # Set up datafeed service and listeners
-    datafeed_event_service = bot_client.get_datafeed_event_service()
-    datafeed_event_service.add_im_listener(IMListenerImpl(bot_client))
-    datafeed_event_service.add_room_listener(RoomListenerImpl(bot_client))
+    datafeed_event_service = utils.bot_client.get_datafeed_event_service()
+    datafeed_event_service.add_im_listener(IMListenerImpl(utils.bot_client))
+    datafeed_event_service.add_room_listener(RoomListenerImpl(utils.bot_client))
 
     # Create and read the datafeed
     log('Starting datafeed')

@@ -30,13 +30,6 @@ class CardProcessor:
             'Complex Product'
         ]
 
-    def send_message(self, stream_id, msg_text, data_payload):
-        data_payload = data_payload.replace('&', '&amp;')
-        msg_text = msg_text.replace('&', '&amp;')
-        message_payload = dict(message=f'<messageML>{msg_text}</messageML>', data=data_payload)
-        self.bot_client.get_message_client().send_msg(stream_id, message_payload)
-        self.bot_client.get_message_client().send_msg
-
     def send_card(self, stream_id, data_row):
         if type(data_row).__name__ == 'DataFrame':
             data_row = data_row.iloc[0]
@@ -46,4 +39,4 @@ class CardProcessor:
         data_json = '{ "fund": ' + data_row.to_json() + '}'
         log(f'Sent flashcard to {stream_id}')
         log(data_json)
-        self.send_message(stream_id, utils.card_template, data_json)
+        utils.send_message(stream_id, utils.card_template, data_json)

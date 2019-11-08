@@ -30,10 +30,6 @@ class MessageProcessor:
         attachment = self.message_client.get_msg_attachment(stream_id, message_id, file_id)
         return base64.b64decode(attachment)
 
-    def send_message(self, stream_id, msg_text):
-        msg_text = msg_text.replace('&', '&amp;')
-        self.message_client.send_msg(stream_id, dict(message=f'<messageML>{msg_text}</messageML>'))
-
     def processROOM(self, msg):
         displayName = msg['user']['displayName']
         stream_id, msg_text, command, rest_of_message = self.parse_message(msg)
@@ -45,31 +41,34 @@ class MessageProcessor:
         log(f'Executing admin {command} query from {displayName}')
 
         if command == '/help':
-            self.send_message(stream_id, self.help_message_admin)
+            utils.send_message(stream_id, self.help_message_admin)
 
         elif command == '/upload':
-            # TODO: Upload
-            self.send_message(stream_id, 'upload')
+            if 'attachments' not in msg or len(msg['attachments']) != 1:
+                utils.send_message(stream_id, 'Please attach data file along with /upload')
+                return
+            self.admin_processor.send_data_file(stream_id)
+            attachment = self.get_attachment(stream_id, msg['messageId'], msg['attachments'][0]['id'])
+            self.admin_processor.replace_data_file(stream_id, attachment)
 
         elif command == '/download':
-            # TODO: Download
-            self.send_message(stream_id, 'download')
+            self.admin_processor.send_data_file(stream_id)
 
         elif command == '/blast':
             if len(msg_text) < 2:
-                self.send_message(stream_id, 'Please use /blast [message]')
+                utils.send_message(stream_id, 'Please use /blast [message]')
                 return
             if 'attachments' not in msg or len(msg['attachments']) != 1:
-                self.send_message(stream_id, 'Please attach 1 file containing an email per line along with /blast')
+                utils.send_message(stream_id, 'Please attach 1 file containing an email per line along with /blast')
                 return
             log(f'Sending blast message: {rest_of_message}')
             attachment = self.get_attachment(stream_id, msg['messageId'], msg['attachments'][0]['id'])
             successful_recipients = self.admin_processor.blast_messages(attachment, rest_of_message)
-            self.send_message(stream_id, f'Blast to {successful_recipients} recipients complete')
+            utils.send_message(stream_id, f'Blast to {successful_recipients} recipients complete')
             log(f'Blast to {successful_recipients} recipients complete')
 
         elif command.startswith('/'):
-            self.send_message(stream_id, f'Sorry, I do not understand the command {command}')
+            utils.send_message(stream_id, f'Sorry, I do not understand the command {command}')
 
     def processIM(self, msg):
         userId = msg['user']['userId']
@@ -78,10 +77,10 @@ class MessageProcessor:
 
         # Administrative commands
         if command == '/help':
-            self.send_message(stream_id, self.help_message)
+            utils.send_message(stream_id, self.help_message)
 
         elif command == '/clear':
-            self.send_message(stream_id, '<br/>' * 50)
+            utils.send_message(stream_id, '<br/>' * 50)
 
         # User performs an initial command search
         elif command == '/isin' or command == '/fundname':
@@ -97,7 +96,7 @@ class MessageProcessor:
             data_rows = self.doSearch(utils.data, rest_of_message, data_field)
 
             if len(data_rows) == 0:
-                self.send_message(stream_id, f'No results found for {field_label} matching {rest_of_message}')
+                utils.send_message(stream_id, f'No results found for {field_label} matching {rest_of_message}')
             elif len(data_rows) == 1:
                 self.card_processor.send_card(stream_id, data_rows)
             else:
@@ -112,11 +111,11 @@ class MessageProcessor:
                 self.card_processor.send_card(stream_id, data_row)
                 del utils.user_state[userId]
             else:
-                self.send_message(stream_id, 'Invalid choice')
+                utils.send_message(stream_id, 'Invalid choice')
 
         # User does anything else
         else:
-            self.send_message(stream_id, 'Please use /fundname [fund name] or /isin [ISIN]')
+            utils.send_message(stream_id, 'Please use /fundname [fund name] or /isin [ISIN]')
 
     def doSearch(self, data_rows, rest_of_message, data_field):
         search_tokens = set(rest_of_message.lower().split())
@@ -147,4 +146,4 @@ class MessageProcessor:
 
         # Format results as list items with indexes and send to user
         results_str = ''.join([f"<li>{i+1}: {result}</li>" for i, result in enumerate(results)])
-        self.send_message(stream_id, f"Please choose one option: <ul>{results_str}</ul>")
+        utils.send_message(stream_id, f"Please choose one option: <ul>{results_str}</ul>")
