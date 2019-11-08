@@ -13,6 +13,7 @@ class CardProcessor:
             'Fund Specific Materials (via Intranet)',
             'Base Ccy',
             'Last Bloomberg Update',
+            'Latest NAV',
             '1 Mth Return (%)',
             '3 Mths Return (%)',
             'YTD Return (%)',
@@ -27,7 +28,8 @@ class CardProcessor:
             'Investment Time Horizon',
             'Dealing Frequency (Subscription) Refer to Funds Identifier tab for Notice Period',
             'Loss Absorption Product',
-            'Complex Product'
+            'Complex Product',
+            'Extra Remarks'
         ]
 
     def send_card(self, stream_id, data_row):

@@ -7,7 +7,7 @@
     </tr>
     <tr>
       <td colspan="2" style="background-color:rgb(55, 95, 146);padding:10px;border:none" class="tempo-text-color--white">
-        <span style="padding-right:15px"><b>NAV</b> 100</span>
+        <span style="padding-right:15px"><b>NAV</b> ${entity['fund']['Latest NAV']}</span>
         <span style="padding-right:15px"><b>CCY</b> ${entity['fund']['Base Ccy']}</span>
         <span style="padding-right:15px"><b>ISIN</b> ${entity['fund']['ISIN (base ccy)']}</span>
         <span style="padding-right:15px"><b>Risk Rating</b> ${entity['fund']['Risk Rating']}</span>
@@ -32,7 +32,7 @@
           </tr>
           <tr>
             <td style="border:none"><b>Investment Time Horizon</b></td>
-            <td style="border:none">>${entity['fund']['Investment Time Horizon']}</td>
+            <td style="border:none">${entity['fund']['Investment Time Horizon']}</td>
           </tr>
           <tr>
             <td style="border:none"><b>Loss Absorption Product</b></td>
@@ -44,7 +44,7 @@
           </tr>
           <tr>
             <td style="border:none"><b>High Yield Bond Fund</b></td>
-            <td style="border:none">No</td>
+            <td style="border:none">${entity['fund']['Is this a High Yield Bond Fund (Yes/No)']}</td>
           </tr>
         </table>
       </td>
@@ -89,14 +89,20 @@
     </tr>
     <tr>
       <td colspan="2" style="text-align:right;border-top:#ccc 1px solid;padding:15px;font-weight:bold;">
+        <#if entity['fund']['Factsheet / Offering Material (via Fundinfo)']!="N/A">
         <span style="padding-right:25px">
-          <a href="${entity['fund']['Factsheet / Offering Material (via Fundinfo)']}">Fund Factsheet</a>
+          <a href="${entity['fund']['Factsheet / Offering Material (via Fundinfo)']}">Fund Documents</a>
         </span>
+        </#if>
+        <#if entity['fund']['Fund Specific Materials (via Intranet)']!="N/A">
         <span>
           <a href="${entity['fund']['Fund Specific Materials (via Intranet)']}">More Information</a>
         </span>
+        </#if>
       </td>
     </tr>
   </table>
 </div>
 <span style="font-size:9pt">Please note that this information is strictly for internal use only and must not be circulated</span>
+<br/><span style="font-size:9pt">${entity['fund']['Extra Remarks']}</span>  
+ 
