@@ -19,6 +19,7 @@ class CardProcessor:
             'YTD Return (%)',
             '1 Yr Return (%)',
             '3 Yr Ann Return (%)',
+            '3 Yr Ann Std Dev (%)',
             'ISIN (base ccy)',
             'Is this a High Yield Bond Fund (Yes/No)',
             'Risk Rating',
