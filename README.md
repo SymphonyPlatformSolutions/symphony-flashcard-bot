@@ -13,11 +13,13 @@ The following fields must be present in data csv for the bot to function
 * Fund Specific Materials (via Intranet)
 * Base Ccy
 * Last Bloomberg Update
+* Latest NAV
 * 1 Mth Return (%)
 * 3 Mths Return (%)
 * YTD Return (%)
 * 1 Yr Return (%)
 * 3 Yr Ann Return (%)
+* 3 Yr Ann Std Dev (%)
 * ISIN (base ccy)
 * Is this a High Yield Bond Fund (Yes/No)
 * Risk Rating
@@ -28,6 +30,7 @@ The following fields must be present in data csv for the bot to function
 * Dealing Frequency (Subscription) Refer to Funds Identifier tab for Notice Period
 * Loss Absorption Product
 * Complex Product
+* Extra Remarks
 
 # Configuration
 Fill up `resources/config.json` with the appropriate values for pod information,
