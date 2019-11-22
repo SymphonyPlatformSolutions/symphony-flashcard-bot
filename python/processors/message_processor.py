@@ -23,6 +23,9 @@ class MessageProcessor:
     def parse_message(self, msg):
         stream_id = self.message_parser.get_stream_id(msg)
         msg_text = self.message_parser.get_text(msg)
+        while (len(msg_text) > 0 and len(msg_text[0].strip()) == 0):
+            msg_text.pop(0)
+
         command = msg_text[0].lower() if len(msg_text) > 0 else ''
         rest_of_message = str.join(' ', msg_text[1:]) if len(msg_text) > 1 else ''
         return stream_id, msg_text, command, rest_of_message
