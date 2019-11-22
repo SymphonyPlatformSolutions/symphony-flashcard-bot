@@ -1,5 +1,5 @@
 <div class="entity" data-entity-id="fund">
-  <table style="border-style:solid;border-width:2px;border-color:rgb(55, 95, 146);margin:1px;">
+  <table style="border-style:solid;border-width:2px;border-color:rgb(55, 95, 146);margin:1px;width:99%">
     <tr>
       <td colspan="2" class="tempo-text-color--white" style="background-color:rgb(55, 95, 146);padding:10px 10px 0 10px;font-size:18pt;font-family: 'Century Gothic', 'Trebuchet MS';border:none">
         <b>${entity['fund']['Funds']}</b>
@@ -83,7 +83,7 @@
           <tr>
             <td style="border:none;font-family: 'Century Gothic', 'Trebuchet MS';"><b>3 Year Annual Std Dev (%)</b></td>
             <td style="border:none;font-family: 'Century Gothic', 'Trebuchet MS';">${entity['fund']['3 Yr Ann Std Dev (%)']}</td>
-          </tr>          
+          </tr>
           <tr>
             <td style="border:none;font-family: 'Century Gothic', 'Trebuchet MS';"><b>Dealing Frequency</b></td>
             <td style="border:none;font-family: 'Century Gothic', 'Trebuchet MS';">${entity['fund']['Dealing Frequency (Subscription) Refer to Funds Identifier tab for Notice Period']}</td>
@@ -104,5 +104,5 @@
 </div>
 <span style="font-size:9pt;font-family: 'Century Gothic', 'Trebuchet MS';">Please note that this information is strictly for internal use only and must not be circulated</span>
 <#if entity['fund']['Extra Remarks']!="N/A">
-<br/><span style="font-size:9pt;font-family: 'Century Gothic', 'Trebuchet MS';">${entity['fund']['Extra Remarks']}</span>  
+<br/><span style="font-size:9pt;font-family: 'Century Gothic', 'Trebuchet MS';">${entity['fund']['Extra Remarks']}</span>
  </#if>

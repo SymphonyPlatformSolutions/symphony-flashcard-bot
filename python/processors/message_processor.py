@@ -132,7 +132,7 @@ class MessageProcessor:
         # Token search
         for i in data_rows.index:
             # Count distinct matching tokens between the search query and data values
-            value_tokens = set(data_rows.loc[i, 'Funds'].lower().split())
+            value_tokens = set(str(data_rows.loc[i, 'Funds']).lower().split())
             match_dict = { k: dict(Counter(value_tokens)).get(k, 0) for k in search_tokens }
             sort_weight = sum(match_dict.values())
             data_rows.loc[i, 'sort_weight'] = sort_weight
