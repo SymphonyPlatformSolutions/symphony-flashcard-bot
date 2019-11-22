@@ -62,4 +62,16 @@ python -m venv ./venv
 source ./venv/bin/activate
 pip install -r requirements.txt
 ```
+
+For offline installs, first prepare the offline package on a different server running the same OS:
+```
+mkdir offline && cd offline
+pip download -r ../requirements.txt
+```
+
+Then move the offline directory to the deployment server and perform offline install:
+```
+pip install --no-index --find-links offline -r requirements.txt
+```
+
 2. Run the bot: ```python python/main.py```
