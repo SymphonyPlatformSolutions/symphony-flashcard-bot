@@ -8,5 +8,5 @@ venv
 config.json
 *.swp
 offline/
-offline*.zip
+*.zip
 
