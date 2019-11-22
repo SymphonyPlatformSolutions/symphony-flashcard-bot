@@ -1,6 +1,7 @@
 import re
 import base64
 import utils
+import pandas as pd
 from utils import log
 from collections import Counter
 from sym_api_client_python.clients.sym_bot_client import SymBotClient
@@ -139,7 +140,10 @@ class MessageProcessor:
 
         # Remove entries with matches less than the maximum number
         max_matches = data_rows['sort_weight'].max()
-        data_rows = data_rows[data_rows.sort_weight == max_matches]
+        if (max_matches == 0):
+            return pd.DataFrame()
+        search_threshold = max_matches - 1 if max_matches > 1 else max_matches
+        data_rows = data_rows[data_rows.sort_weight >= search_threshold]
 
         # Sort by token matches in descending then fund name in ascending
         return data_rows.sort_values(['sort_weight', 'Funds'], ascending=[False, True])
