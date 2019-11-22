@@ -13,6 +13,9 @@ class AdminProcessor:
         successful_recipients = 0
         emails = file.splitlines()
         for email in emails:
+            email = email.strip()
+            if len(email) == 0:
+                continue
             user = self.bot_client.get_user_client().get_user_from_email(email, True)
             if len(user) == 0:
                 log(f'Cannot find user with email {email}')
