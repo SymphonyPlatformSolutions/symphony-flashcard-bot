@@ -91,7 +91,7 @@ class MessageProcessor:
             utils.send_message(stream_id, self.help_message)
 
         elif command == '/clear':
-            utils.send_message(stream_id, '<br/>' * 50)
+            utils.send_message(stream_id, '&#8205;<br/>' * 50)
 
         # User performs an initial command search
         elif (command == '/isin' or command == '/fundname') and len(rest_of_message) > 0:
