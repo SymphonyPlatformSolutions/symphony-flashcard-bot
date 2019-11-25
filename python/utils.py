@@ -1,9 +1,14 @@
+import os
 import sys
 import logging
 import traceback
+import pandas as pd
 from sym_api_client_python.clients.sym_bot_client import SymBotClient
 from pathlib import Path
+from shutil import copyfile
 from datetime import datetime
+from time import sleep
+
 
 def init():
     global bot_client
@@ -76,3 +81,49 @@ def send_message(stream_id, msg_text, data = None, filename = None, attachment =
     if data is not None:
         message_payload['data'] = data.replace('&', '&amp;')
     bot_client.get_message_client().send_msg(stream_id, message_payload)
+
+def is_utf8(data):
+    try:
+        decoded = data.decode('UTF-8')
+    except UnicodeDecodeError:
+        return False
+    else:
+        for ch in decoded:
+            if 0xD800 <= ord(ch) <= 0xDFFF:
+                return False
+        return True
+
+def watch_data_file():
+    global last_modified
+    last_modified = os.stat(data_file_path).st_mtime
+    copyfile(data_file_path, data_file_path + '.backup')
+
+    while True:
+        last_modified_now = os.stat(data_file_path).st_mtime
+        if last_modified != last_modified_now:
+            last_modified = last_modified_now
+            load_data_file()
+        sleep(1)
+
+def load_data_file():
+    global last_modified
+    global user_state
+    global data
+
+    try:
+        log(f'Loading data file from {data_file_path}')
+        send_message(admin_stream_id, "Loading new data file..")
+        utf8 = is_utf8(open(data_file_path, "rb").read())
+        log('New data file is ' + ('' if utf8 else 'not ') + 'unicode')
+        file_encoding = 'utf-8' if utf8 else 'cp1252'
+        data = pd.read_csv(data_file_path, encoding=file_encoding)
+        user_state = {}
+        send_message(admin_stream_id, "The new data file has been loaded successfully")
+    except:
+        log(f'Bad data file: reverting change')
+        copyfile(data_file_path + '.backup', data_file_path)
+        data = pd.read_csv(data_file_path)
+        user_state = {}
+        send_message(admin_stream_id, "The new data file cannot be processed. This operation has been aborted.")
+        last_modified = os.stat(data_file_path).st_mtime
+        print(f'set {last_modified}')

@@ -1,4 +1,6 @@
 from utils import log
+import logging
+import traceback
 from sym_api_client_python.clients.sym_bot_client import SymBotClient
 from sym_api_client_python.listeners.room_listener import RoomListener
 from processors.message_processor import MessageProcessor
@@ -11,7 +13,11 @@ class RoomListenerImpl(RoomListener):
 
     def on_room_msg(self, msg):
         log('room msg received', msg)
-        self.msg_processor.processROOM(msg)
+        try:
+            self.msg_processor.processROOM(msg)
+        except Exception as error:
+            traceback.print_exc()
+            logging.error(error)
 
     def on_room_created(self, room_created):
         log('room created', room_created)

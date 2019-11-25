@@ -1,5 +1,6 @@
 import utils
 from utils import log
+from threading import Thread
 from sym_api_client_python.configure.configure import SymConfig
 from sym_api_client_python.auth.rsa_auth import SymBotRSAAuth
 from sym_api_client_python.clients.sym_bot_client import SymBotClient
@@ -22,8 +23,15 @@ def main():
     if 'dataFilePath' in config.data and len(config.data['dataFilePath']) > 3:
         utils.data_file_path = config.data['dataFilePath']
     log(f'Loading data file from {utils.data_file_path}')
-    utils.data = pd.read_csv(utils.data_file_path)
+    utf8 = utils.is_utf8(open(utils.data_file_path, "rb").read())
+    log('Data file is ' + ('' if utf8 else 'not ') + 'unicode')
+    file_encoding = 'utf-8' if utf8 else 'cp1252'
+    utils.data = pd.read_csv(utils.data_file_path, encoding=file_encoding)
     utils.user_state = {}
+
+    # Watch for changes in data file
+    watch_thread = Thread(target = utils.watch_data_file)
+    watch_thread.start()
 
     # Load card template
     with open('resources/card-template.ftl', 'r') as file:
