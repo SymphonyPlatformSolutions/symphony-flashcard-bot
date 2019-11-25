@@ -8,6 +8,7 @@ from sym_api_client_python.clients.sym_bot_client import SymBotClient
 from sym_api_client_python.processors.sym_message_parser import SymMessageParser
 from .admin_processor import AdminProcessor
 from .card_processor import CardProcessor
+from bs4 import BeautifulSoup
 
 
 class MessageProcessor:
@@ -21,11 +22,14 @@ class MessageProcessor:
         self.help_message_admin = 'Welcome to MI Flash Bot. Please use the following commands:<ul><li><b>/help</b>: show this message</li><li><b>/download</b>: get the active data file</li><li><b>/upload</b>: used together with an attached data file to replace the active data file</li><li><b>/blast [message]</b>: used together with an attached file containing 1 email address per line to blast IM messages</li><li><b>/logs</b>: get the bot activity log</li></ul>'
 
     def parse_message(self, msg):
+        msg_text = []
+        soup = BeautifulSoup(msg['message'], 'html.parser')
+        for i in soup.findAll(text=True):
+            msg_text.extend(i.split(' '))
         stream_id = self.message_parser.get_stream_id(msg)
-        msg_text = self.message_parser.get_text(msg)
+
         while (len(msg_text) > 0 and len(msg_text[0].strip()) == 0):
             msg_text.pop(0)
-
         command = msg_text[0].lower() if len(msg_text) > 0 else ''
         rest_of_message = str.join(' ', msg_text[1:]) if len(msg_text) > 1 else ''
         return stream_id, msg_text, command, rest_of_message
