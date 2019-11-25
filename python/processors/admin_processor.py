@@ -13,6 +13,7 @@ class AdminProcessor:
         self.bot_client = bot_client
 
     def blast_messages(self, file, message):
+        utils.send_message(utils.admin_stream_id, f'Blast message process started.')
         successful_recipients = 0
         emails = file.splitlines()
         for email in emails:
@@ -30,7 +31,8 @@ class AdminProcessor:
                 successful_recipients += 1
             except Exception as error:
                 log(f'Cannot send message to user: {email}')
-        return successful_recipients
+        utils.send_message(utils.admin_stream_id, f'Blast to {successful_recipients} recipients complete')
+        log(f'Blast to {successful_recipients} recipients complete')
 
     def send_log_file(self, stream_id):
         utils.send_message(stream_id, "The log file is attached", None, "activity-log.csv", "logs/user.log")

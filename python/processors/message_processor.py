@@ -2,6 +2,7 @@ import re
 import base64
 import utils
 import pandas as pd
+from threading import Thread
 from utils import log
 from collections import Counter
 from sym_api_client_python.clients.sym_bot_client import SymBotClient
@@ -74,9 +75,8 @@ class MessageProcessor:
                 return
             log(f'Sending blast message: {rest_of_message}')
             attachment = self.get_attachment(stream_id, msg['messageId'], msg['attachments'][0]['id'])
-            successful_recipients = self.admin_processor.blast_messages(attachment, rest_of_message)
-            utils.send_message(stream_id, f'Blast to {successful_recipients} recipients complete')
-            log(f'Blast to {successful_recipients} recipients complete')
+            blast_thread = Thread(target = self.admin_processor.blast_messages, args = (attachment, rest_of_message))
+            blast_thread.start()
 
         elif command.startswith('/'):
             utils.send_message(stream_id, f'Sorry, I do not understand the command {command}')
