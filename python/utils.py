@@ -1,4 +1,6 @@
+import sys
 import logging
+import traceback
 from sym_api_client_python.clients.sym_bot_client import SymBotClient
 from pathlib import Path
 from datetime import datetime
@@ -22,12 +24,20 @@ def configure_logging():
     )
     logging.getLogger("urllib3").setLevel(logging.WARNING)
 
+    sys.excepthook = exception_log
+
     user_log_path = "./logs/user.log"
     user_log_file = Path(user_log_path)
     if not user_log_file.is_file():
         f = open(user_log_path, "x")
         f.write("DateTime,Username,DisplayName,Department,QueryType,QueryString\r\n")
         f.close()
+
+def exception_log(type, value, tb):
+    logging.error(str(value))
+    f = open('./logs/mi-bot.log', 'a')
+    traceback.print_tb(tb, file=f)
+    f.close()
 
 
 def log(message, data = None):
