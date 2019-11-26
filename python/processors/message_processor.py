@@ -21,7 +21,8 @@ class MessageProcessor:
         self.card_processor = CardProcessor(self.bot_client)
         self.help_message = 'Welcome to MI Flash Bot. Please use the following commands:<ul><li><b>/help</b>: show this message</li><li><b>/fundname [search query]</b>: search for funds by name</li><li><b>/isin [search query]</b>: search for funds by ISIN</li></ul>'
         self.help_message_admin = 'Welcome to MI Flash Bot. Please use the following commands:<ul><li><b>/help</b>: show this message</li><li><b>/download</b>: get the active data file</li><li><b>/upload</b>: used together with an attached data file to replace the active data file</li><li><b>/blast [message]</b>: used together with an attached file containing 1 email address per line to blast IM messages</li><li><b>/logs</b>: get the bot activity log</li></ul>'
-
+        self.other_message = 'Hi there, welcome to the Managed Investments Bot.<br/>I am here to make your life easier. I can help you access quick information on funds covered by BOS.<br/><br/>To start, you can search by either of the following:<br/><b>(1) Search by Fund Name:</b> enter /fundname followed by name of the fund. Example: /fundname PIMCO GIS Income<br/><b>(2) Search by ISIN:</b> enter /ISIN followed by ISIN number of the fund. Example: /ISIN XS1234567<br/><br/>Let us start!'
+        
     def parse_message(self, msg):
         msg_text = []
         soup = BeautifulSoup(msg['message'], 'html.parser')
@@ -128,7 +129,7 @@ class MessageProcessor:
 
         # User does anything else
         else:
-            utils.send_message(stream_id, 'Please use /fundname [fund name] or /isin [ISIN]')
+            utils.send_message(stream_id, self.other_message)
 
     def doSearch(self, data_rows, rest_of_message, data_field):
         search_tokens = set(rest_of_message.lower().split())
