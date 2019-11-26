@@ -102,7 +102,9 @@
     </tr>
   </table>
 </div>
-<span style="font-size:9pt;font-family: 'Century Gothic', 'Trebuchet MS';">Please note that this information is strictly for internal use only and must not be circulated</span>
+<span style="font-size:9pt;font-family: 'Century Gothic', 'Trebuchet MS';">*Important Note on AR: Please refer to the Advanced Collateral Engine ("ACE") for the most updated AR value. Should there be any discrepanies, the AR value on ACE shall apply.</span>
+<br/><span style="font-size:9pt;font-family: 'Century Gothic', 'Trebuchet MS';">Please note that this information is strictly for internal use only and must not be circulated</span>
 <#if entity['fund']['Extra Remarks']!="N/A">
 <br/><span style="font-size:9pt;font-family: 'Century Gothic', 'Trebuchet MS';">${entity['fund']['Extra Remarks']}</span>
- </#if>
+</#if>
+<br/><br/><span style="font-size:9pt;font-family: 'Century Gothic', 'Trebuchet MS';">Thanks for making my day! Want a new search? Enter "/fundname" or "/ISIN" to begin.</span>
