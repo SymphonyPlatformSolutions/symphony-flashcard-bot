@@ -133,11 +133,13 @@ class MessageProcessor:
     def doSearch(self, data_rows, rest_of_message, data_field):
         search_tokens = set(rest_of_message.lower().split())
 
-        # Partial/full-text search
-        if len(search_tokens) == 1:
-            return utils.data[utils.data[data_field].str.contains(rest_of_message, flags=re.IGNORECASE, na=False)]
+        # Try contains match
+        contains_match = utils.data[utils.data[data_field].str.contains(rest_of_message, flags=re.IGNORECASE, na=False)]
+        # If only 1 hit in contains match or if only 1 word in search query, return this
+        if len(contains_match) == 1 or len(search_tokens) == 1:
+            return contains_match
 
-        # Token search
+        # If more than 1 word in search query, perform tokenised search
         for i in data_rows.index:
             # Count distinct matching tokens between the search query and data values
             value_tokens = set(str(data_rows.loc[i, 'Funds']).lower().split())
@@ -145,14 +147,21 @@ class MessageProcessor:
             sort_weight = sum(match_dict.values())
             data_rows.loc[i, 'sort_weight'] = sort_weight
 
-        # Remove entries with matches less than the maximum number
+        # If no tokens match, return empty result set
         max_matches = data_rows['sort_weight'].max()
         if (max_matches == 0):
             return pd.DataFrame()
+
+        # If there is only 1 match with max token matches, return that result
+        try_exact_match = data_rows[data_rows.sort_weight == max_matches]
+        if len(try_exact_match) == 1:
+            return try_exact_match
+
+        # Prepare results with at least max - 1 matching tokens
         search_threshold = max_matches - 1 if max_matches > 1 else max_matches
         data_rows = data_rows[data_rows.sort_weight >= search_threshold]
 
-        # Sort by token matches in descending then fund name in ascending
+        # Sort by matching tokens in descending then fund name in ascending
         return data_rows.sort_values(['sort_weight', 'Funds'], ascending=[False, True])
 
     def showMultiOptions(self, userId, stream_id, data_rows, rest_of_message):
