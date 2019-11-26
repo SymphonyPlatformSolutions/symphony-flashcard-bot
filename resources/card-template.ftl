@@ -69,7 +69,7 @@
             <td style="border:none;font-family: 'Century Gothic', 'Trebuchet MS';">${entity['fund']['3 Mths Return (%)']}</td>
           </tr>
           <tr>
-            <td style="border:none;font-family: 'Century Gothic', 'Trebuchet MS';"><b>YTD Month Return (%)</b></td>
+            <td style="border:none;font-family: 'Century Gothic', 'Trebuchet MS';"><b>YTD Return (%)</b></td>
             <td style="border:none;font-family: 'Century Gothic', 'Trebuchet MS';">${entity['fund']['YTD Return (%)']}</td>
           </tr>
           <tr>
@@ -77,7 +77,7 @@
             <td style="border:none;font-family: 'Century Gothic', 'Trebuchet MS';">${entity['fund']['1 Yr Return (%)']}</td>
           </tr>
           <tr>
-            <td style="border:none;font-family: 'Century Gothic', 'Trebuchet MS';"><b>>3 Year Annual Return (%)</b></td>
+            <td style="border:none;font-family: 'Century Gothic', 'Trebuchet MS';"><b>3 Year Annual Return (%)</b></td>
             <td style="border:none;font-family: 'Century Gothic', 'Trebuchet MS';">${entity['fund']['3 Yr Ann Return (%)']}</td>
           </tr>
           <tr>
