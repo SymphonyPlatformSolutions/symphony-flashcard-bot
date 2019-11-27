@@ -69,6 +69,11 @@ def user_log(user, query_type, query_string):
     f.write(f'{dt_string},"{username}","{displayName}","{dept}","{query_type}","{query_string}"\r\n')
     f.close()
 
+def send_blanks(stream_id, quantity):
+    blanks = '&#8205;<br/>' * quantity
+    message_payload = dict(message=f'<messageML>{blanks}</messageML>')
+    bot_client.get_message_client().send_msg(stream_id, message_payload)
+
 def send_message(stream_id, msg_text, data = None, filename = None, attachment = None):
     msg_text = msg_text.replace('&', '&amp;')
     msg_text = f'<messageML>{msg_text}</messageML>'
