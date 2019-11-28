@@ -46,6 +46,5 @@ class AdminProcessor:
         copyfile(utils.data_file_path, utils.data_file_path + '.backup')
 
         log('Writing new data file')
-        f = open(utils.data_file_path, 'wb')
-        f.write(file)
-        f.close()
+        with open(utils.data_file_path, 'wb') as f:
+            f.write(file)

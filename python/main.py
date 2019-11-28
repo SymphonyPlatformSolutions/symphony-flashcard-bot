@@ -23,7 +23,7 @@ def main():
     if 'dataFilePath' in config.data and len(config.data['dataFilePath']) > 3:
         utils.data_file_path = config.data['dataFilePath']
     log(f'Loading data file from {utils.data_file_path}')
-    utf8 = utils.is_utf8(open(utils.data_file_path, "rb").read())
+    utf8 = utils.is_utf8(utils.data_file_path)
     log('Data file is ' + ('' if utf8 else 'not ') + 'unicode')
     file_encoding = 'utf-8' if utf8 else 'cp1252'
     utils.data = pd.read_csv(utils.data_file_path, encoding=file_encoding)

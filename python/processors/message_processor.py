@@ -53,6 +53,9 @@ class MessageProcessor:
             if 'attachments' not in msg or len(msg['attachments']) != 1:
                 utils.send_message(stream_id, 'Please attach data file along with /upload')
                 return
+            if not str(msg['attachments'][0]['name']).lower().endswith('.csv'):
+                utils.send_message(stream_id, 'Please attach a CSV data file')
+                return
             self.admin_processor.send_data_file(stream_id)
             attachment = self.get_attachment(stream_id, msg['messageId'], msg['attachments'][0]['id'])
             self.admin_processor.replace_data_file(stream_id, attachment)
