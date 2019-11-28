@@ -131,4 +131,3 @@ def load_data_file():
         user_state = {}
         send_message(admin_stream_id, "The new data file cannot be processed. This operation has been aborted.")
         last_modified = os.stat(data_file_path).st_mtime
-        print(f'set {last_modified}')
