@@ -9,7 +9,6 @@ from sym_api_client_python.clients.sym_bot_client import SymBotClient
 from sym_api_client_python.processors.sym_message_parser import SymMessageParser
 from .admin_processor import AdminProcessor
 from .card_processor import CardProcessor
-from bs4 import BeautifulSoup
 
 
 class MessageProcessor:
@@ -24,10 +23,7 @@ class MessageProcessor:
         self.other_message = 'Hi there, welcome to the Managed Investments Bot.<br/>I am here to make your life easier. I can help you access quick information on funds covered by BOS.<br/><br/>To start, you can search by either of the following:<br/><b>(1) Search by Fund Name:</b> enter /fundname followed by name of the fund. Example: /fundname PIMCO GIS Income<br/><b>(2) Search by ISIN:</b> enter /ISIN followed by ISIN number of the fund. Example: /ISIN XS1234567<br/><br/>Let us start!'
 
     def parse_message(self, msg):
-        msg_text = []
-        soup = BeautifulSoup(msg['message'], 'html.parser')
-        for i in soup.findAll(text=True):
-            msg_text.extend(i.split(' '))
+        msg_text = self.message_parser.get_text(msg)
         stream_id = self.message_parser.get_stream_id(msg)
 
         while (len(msg_text) > 0 and len(msg_text[0].strip()) == 0):
