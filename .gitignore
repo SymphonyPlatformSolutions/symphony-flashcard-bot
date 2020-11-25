@@ -1,0 +1,12 @@
+.DS_Store
+.idea
+rsa
+logs
+__pycache__
+venv
+.vscode
+config.json
+*.swp
+offline/
+*.backup
+
