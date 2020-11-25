@@ -1,7 +1,5 @@
-## MI Flashcard Bot
+## Symphone TradeView Bot
 This bot reads off a CSV file as a data store of managed investment products, allowing users to query funds by name or ISIN and obtain a data flashcard of the requested fund.
-
-![](demo.png)
 
 ## Requirements
 * Python 3
@@ -47,12 +45,12 @@ service account details, data file location and the name of the admin room.
     "agentPort": 443,
     "authType": "rsa",
     "botPrivateKeyPath": "rsa/",
-    "botPrivateKeyName": "rsa-private-mi-flashcard-bot.pem",
-    "botUsername": "mi-flashcard-bot",
-    "botEmailAddress": "mi-flashcard-bot@bots.symphony.com",
+    "botPrivateKeyName": "rsa-private-tradeview-bot.pem",
+    "botUsername": "tradeview-bot",
+    "botEmailAddress": "tradeview-bot@bots.symphony.com",
     "truststorePath": "internal_truststore",
     "dataFilePath": "/path/to/data.csv",
-    "adminRoomName": "MI Flashcard Bot Admin Room"
+    "adminRoomName": "TradeView Bot Admin Room"
 }
 ```
 # Deployment
